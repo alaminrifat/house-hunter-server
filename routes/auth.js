@@ -19,7 +19,7 @@ const verifyToken = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, secretKey);
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
         req.user = decoded;
         next();
     } catch (error) {
@@ -125,7 +125,7 @@ router.get("/dashboard", verifyToken, async (req, res) => {
         console.error("Error fetching houses:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
@@ -187,7 +187,7 @@ router.post("/houses", verifyToken, async (req, res) => {
         console.error("Error adding house:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
@@ -222,7 +222,7 @@ router.delete("/houses/:id", verifyToken, async (req, res) => {
         console.error("Error deleting house:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
@@ -290,23 +290,23 @@ router.put("/houses/:id", verifyToken, async (req, res) => {
         console.error("Error updating house:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
-// House Renter Dashboard
+// House Renter Dashboard get bookings 
 router.get("/renter/dashboard", verifyToken, async (req, res) => {
     try {
-        const userId = req.user.userId; // Get the logged-in user's ID
+        const userEmail = req.user.email; // Get the logged-in user's email //TODO: check email? or user email?
 
         // Connect to MongoDB
         const client = await MongoClient.connect(process.env.MONGO_URI);
         const db = client.db(dbName);
 
-        // Fetch the bookings associated with the House Renter
+        // Fetch the bookings associated with the House Renter's email
         const bookings = await db
             .collection("bookings")
-            .find({ renter: userId })
+            .find({ email: userEmail })
             .toArray();
 
         res.json({ bookings });
@@ -314,7 +314,7 @@ router.get("/renter/dashboard", verifyToken, async (req, res) => {
         console.error("Error fetching bookings:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
@@ -362,7 +362,7 @@ router.post("/bookings", verifyToken, async (req, res) => {
         console.error("Error creating booking:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
@@ -397,7 +397,7 @@ router.delete("/bookings/:id", verifyToken, async (req, res) => {
         console.error("Error removing booking:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
@@ -458,7 +458,7 @@ router.get("/houses", async (req, res) => {
         console.error("Error fetching houses:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        client.close();
+        // client.close();
     }
 });
 
