@@ -88,12 +88,15 @@ router.post("/login", async (req, res) => {
         }
 
         // Generate JWT token
-        const token = jwt.sign({ userId: user._id }, process.env.SECRET_KEY, {
-            expiresIn: "1h",
-        });
+        const token = jwt.sign(
+            { userId: user._id, email: user.email, role: user.role },
+            process.env.SECRET_KEY,
+            { expiresIn: "1d" }
+        );
 
+        console.log(user.role);
         // Return the token
-        res.json({ token });
+        res.json({ token, role: user.role });
     } catch (error) {
         console.error("Error during user login:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -147,6 +150,7 @@ router.post("/houses", verifyToken, async (req, res) => {
             availabilityDate,
             rentPerMonth,
             phoneNumber,
+            email,
             description,
         } = req.body;
         const owner = req.user.userId; // Get the logged-in user's ID
@@ -170,6 +174,7 @@ router.post("/houses", verifyToken, async (req, res) => {
             availabilityDate,
             rentPerMonth,
             phoneNumber,
+            email,
             description,
             owner,
         };
@@ -243,6 +248,7 @@ router.put("/houses/:id", verifyToken, async (req, res) => {
             availabilityDate,
             rentPerMonth,
             phoneNumber,
+            email,
             description,
         } = req.body;
         const owner = req.user.userId; // Get the logged-in user's ID
@@ -269,6 +275,7 @@ router.put("/houses/:id", verifyToken, async (req, res) => {
                     availabilityDate,
                     rentPerMonth,
                     phoneNumber,
+                    email,
                     description,
                 },
             }
