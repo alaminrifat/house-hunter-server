@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -106,18 +106,18 @@ router.post("/login", async (req, res) => {
 });
 
 // House Owner Dashboard
-router.get("/dashboard", verifyToken, async (req, res) => {
+router.get("/houses/:email", verifyToken, async (req, res) => {
     try {
-        const userId = req.user.userId; // Get the logged-in user's ID
-
+        const email = req.params.email;
+        console.log(email);
         // Connect to MongoDB
         const client = await MongoClient.connect(process.env.MONGO_URI);
         const db = client.db(dbName);
 
-        // Fetch the list of houses owned by the logged-in House Owner
+        // Fetch the list of houses owned by the user with the specified email
         const houses = await db
             .collection("houses")
-            .find({ owner: userId })
+            .find({ email: email })
             .toArray();
 
         res.json({ houses });
@@ -201,8 +201,7 @@ router.delete("/houses/:id", verifyToken, async (req, res) => {
             });
         }
 
-        const houseId = req.params.id;
-        const owner = req.user.userId; // Get the logged-in user's ID
+        const id = req.params.id;
 
         // Connect to MongoDB
         const client = await MongoClient.connect(process.env.MONGO_URI);
@@ -211,8 +210,9 @@ router.delete("/houses/:id", verifyToken, async (req, res) => {
         // Find and delete the house
         const result = await db
             .collection("houses")
-            .deleteOne({ _id: ObjectId(houseId), owner });
+            .deleteOne({ _id: new ObjectId(id) });
 
+        console.log(result);
         if (result.deletedCount === 0) {
             return res.status(404).json({ error: "House not found" });
         }
@@ -294,7 +294,7 @@ router.put("/houses/:id", verifyToken, async (req, res) => {
     }
 });
 
-// House Renter Dashboard get bookings 
+// House Renter Dashboard get bookings
 router.get("/renter/dashboard", verifyToken, async (req, res) => {
     try {
         const userEmail = req.user.email; // Get the logged-in user's email //TODO: check email? or user email?
