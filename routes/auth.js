@@ -154,6 +154,11 @@ router.post("/houses", verifyToken, async (req, res) => {
             description,
         } = req.body;
         const owner = req.user.userId; // Get the logged-in user's ID
+        // Parse the values
+        const parsedBedrooms = parseInt(bedrooms);
+        const parsedBathrooms = parseInt(bathrooms);
+        const parsedRoomSize = parseInt(roomSize);
+        const parsedRentPerMonth = parseFloat(rentPerMonth);
 
         // Validate the phone number (Bangladeshi phone numbers only)
         // Implement phone number validation logic here
@@ -167,12 +172,12 @@ router.post("/houses", verifyToken, async (req, res) => {
             name,
             address,
             city,
-            bedrooms,
-            bathrooms,
-            roomSize,
+            bedrooms: parsedBedrooms,
+            bathrooms: parsedBathrooms,
+            roomSize: parsedRoomSize,
             picture,
             availabilityDate,
-            rentPerMonth,
+            rentPerMonth: parsedRentPerMonth,
             phoneNumber,
             email,
             description,
@@ -253,7 +258,11 @@ router.put("/houses/:id", verifyToken, async (req, res) => {
         } = req.body;
         const owner = req.user.userId; // Get the logged-in user's ID
 
-        // Validate the phone number (Bangladeshi phone numbers only)
+        const parsedBedrooms = parseInt(bedrooms);
+        const parsedBathrooms = parseInt(bathrooms);
+        const parsedRoomSize = parseInt(roomSize);
+        const parsedRentPerMonth = parseFloat(rentPerMonth);
+
         // Implement  phone number validation logic here
 
         // Connect to MongoDB
@@ -262,18 +271,18 @@ router.put("/houses/:id", verifyToken, async (req, res) => {
 
         // Find and update the house
         const result = await db.collection("houses").updateOne(
-            { _id: ObjectId(houseId), owner },
+            { _id: new ObjectId(houseId) },
             {
                 $set: {
                     name,
                     address,
                     city,
-                    bedrooms,
-                    bathrooms,
-                    roomSize,
+                    bedrooms: parsedBedrooms,
+                    bathrooms: parsedBathrooms,
+                    roomSize: parsedRoomSize,
                     picture,
                     availabilityDate,
-                    rentPerMonth,
+                    rentPerMonth: parsedRentPerMonth,
                     phoneNumber,
                     email,
                     description,
@@ -377,7 +386,6 @@ router.delete("/bookings/:id", verifyToken, async (req, res) => {
         }
 
         const bookingId = req.params.id;
-        const renter = req.user.userId; // Get the logged-in user's ID
 
         // Connect to MongoDB
         const client = await MongoClient.connect(process.env.MONGO_URI);
@@ -386,7 +394,7 @@ router.delete("/bookings/:id", verifyToken, async (req, res) => {
         // Find and delete the booking
         const result = await db
             .collection("bookings")
-            .deleteOne({ _id: ObjectId(bookingId), renter });
+            .deleteOne({ _id: new ObjectId(bookingId) });
 
         if (result.deletedCount === 0) {
             return res.status(404).json({ error: "Booking not found" });
@@ -461,5 +469,23 @@ router.get("/houses", async (req, res) => {
         // client.close();
     }
 });
+// get a single house details
+router.get("/house/:id", verifyToken, async (req, res) => {
+    // Connect to MongoDB
+    const id = req.params.id;
+    const client = await MongoClient.connect(process.env.MONGO_URI);
 
+    try {
+        const db = client.db(dbName);
+        const result = await db
+            .collection("houses")
+            .findOne({ _id: new ObjectId(id) });
+        res.json({ result });
+    } catch (error) {
+        console.error("Error fetching houses:", error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        // client.close();
+    }
+});
 module.exports = router;

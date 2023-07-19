@@ -1,15 +1,33 @@
-
 const express = require("express");
 const dotEnv = require("dotenv");
 const { default: mongoose } = require("mongoose");
 const cors = require("cors");
 const app = express();
 const authRoutes = require("./routes/auth");
-require('dotenv').config();
-app.use(cors());
-dotEnv.config();
+require("dotenv").config();
+
 const port = process.env.PORT || 3000;
 
+const corsConfig = {
+    origin: "*",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+        "Content-Type",
+        "Origin",
+        "X-Requested-With",
+        "Accept",
+        "x-client-key",
+        "x-client-token",
+        "x-client-secret",
+        "Authorization",
+    ],
+    credentials: true,
+};
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
+app.use(cors());
+dotEnv.config();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
