@@ -26,7 +26,6 @@ const corsConfig = {
 };
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
-app.use(cors());
 dotEnv.config();
 // Middleware
 app.use(express.json());
