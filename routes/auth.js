@@ -8,7 +8,7 @@ const router = express.Router();
 const mongoURL = "mongodb://localhost:27017";
 const dbName = process.env.DB_NAME;
 
-app.get("/test", (req, res) => {
+router.get("/test", (req, res) => {
     res.send("Test is working fine...");
 });
 
