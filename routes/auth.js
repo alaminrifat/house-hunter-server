@@ -3,38 +3,15 @@ const { MongoClient, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-require("dotenv").config();
-
-const corsConfig = {
-    origin: "*",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: [
-        "Content-Type",
-        "Origin",
-        "X-Requested-With",
-        "Accept",
-        "x-client-key",
-        "x-client-token",
-        "x-client-secret",
-        "Authorization",
-    ],
-    credentials: true,
-};
-app.use(cors(corsConfig));
-app.options("*", cors(corsConfig));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
-
 const router = express.Router();
 
 const mongoURL = "mongodb://localhost:27017";
 const dbName = process.env.DB_NAME;
 
-router.get("/test", (req, res) => {
-    res.send("Test is working fine...");
+router.get("/test", async (req, res) => {
+    const client = await MongoClient.connect(process.env.MONGO_URI);
+    const db = client.db(dbName);
+    res.send(`Test is working fine... ${client}`);
 });
 
 //  verify JWT
