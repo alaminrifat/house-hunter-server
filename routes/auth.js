@@ -3,6 +3,31 @@ const { MongoClient, ObjectId } = require("mongodb");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+require("dotenv").config();
+
+const corsConfig = {
+    origin: "*",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+        "Content-Type",
+        "Origin",
+        "X-Requested-With",
+        "Accept",
+        "x-client-key",
+        "x-client-token",
+        "x-client-secret",
+        "Authorization",
+    ],
+    credentials: true,
+};
+app.use(cors(corsConfig));
+app.options("*", cors(corsConfig));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+
 const router = express.Router();
 
 const mongoURL = "mongodb://localhost:27017";
