@@ -96,7 +96,7 @@ router.post("/login", async (req, res) => {
 
         console.log(user.role);
         // Return the token
-        res.json({ token, role: user.role });
+        res.json({ token, role: user.role, fullName: user.fullName });
     } catch (error) {
         console.error("Error during user login:", error);
         res.status(500).json({ error: "Internal server error" });
@@ -295,10 +295,10 @@ router.put("/houses/:id", verifyToken, async (req, res) => {
 });
 
 // House Renter Dashboard get bookings
-router.get("/renter/dashboard", verifyToken, async (req, res) => {
+router.get("/renter/bookings/:email", verifyToken, async (req, res) => {
     try {
-        const userEmail = req.user.email; // Get the logged-in user's email //TODO: check email? or user email?
-
+        const userEmail = req.params.email;
+        console.log(userEmail);
         // Connect to MongoDB
         const client = await MongoClient.connect(process.env.MONGO_URI);
         const db = client.db(dbName);
