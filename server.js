@@ -26,8 +26,6 @@ const corsConfig = {
 };
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
-dotEnv.config();
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,6 +34,9 @@ app.use("/api", authRoutes);
 
 app.get("/", (req, res) => {
     res.send("House Hunter Server is Running...");
+});
+app.get("/test", (req, res) => {
+    res.send("Test is working fine...");
 });
 
 // Connect to MongoDB

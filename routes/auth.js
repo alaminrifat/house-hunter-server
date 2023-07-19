@@ -8,6 +8,10 @@ const router = express.Router();
 const mongoURL = "mongodb://localhost:27017";
 const dbName = process.env.DB_NAME;
 
+app.get("/test", (req, res) => {
+    res.send("Test is working fine...");
+});
+
 //  verify JWT
 const verifyToken = (req, res, next) => {
     const token = req.header("Authorization")?.split(" ")[1];
